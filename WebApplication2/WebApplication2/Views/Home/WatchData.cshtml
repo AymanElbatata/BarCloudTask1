@@ -1,0 +1,109 @@
+﻿@{
+    ViewBag.Title = "WatchData";
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.10.8/xlsx.full.min.js"></script>
+    <script src="~/Content/MyJs.js"></script>
+}
+
+
+<div class="container text-center">
+    <h2>API JavaScript SpreadSheet (<span id="Mymain"></span>) Rows</h2>
+    <br />
+    <div class="w-50 m-auto">
+        <span>Update DataBase from SpreadSheet</span> <button id="updateBTN" class="btn btn-outline-success">Click</button>
+    </div>
+
+    <br />
+    <br />
+    <br />
+    <table class="table table-striped">
+        <tr>
+            <th>#Asset</th>
+            <th>#Model</th>
+            <th>#Vendor</th>
+            <th>#Description</th>
+        </tr>
+        <tbody id="MyTBody">
+        </tbody>
+    </table>
+</div>
+
+<div class="container text-center">
+    <div class="m-auto">
+       <a href="@Url.Action("Index","Home", new { Area="" }, null)">Go To Main</a>
+    </div>
+</div>
+
+
+<script>
+    let Alldata = [];
+var urlsss = 'https://docs.google.com/spreadsheets/d/1IqzaEEsdcHotaGGtep4mwst_LwpdYEc-llJ41-GnT9I/export?format=xlsx';
+
+/* set up XMLHttpRequest */
+var oReq = new XMLHttpRequest();
+oReq.open("GET", urlsss, true);
+oReq.responseType = "arraybuffer";
+
+oReq.onload = function (e) {
+    var arraybuffer = oReq.response;
+
+    /* convert data to binary string */
+    var data = new Uint8Array(arraybuffer);
+    var arr = new Array();
+    for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+    var bstr = arr.join("");
+
+    /* Call XLSX */
+    var workbook = XLSX.read(bstr, {
+        type: "binary"
+    });
+
+    /* DO SOMETHING WITH workbook HERE */
+    var first_sheet_name = workbook.SheetNames[0];
+    /* Get worksheet */
+    var worksheet = workbook.Sheets[first_sheet_name];
+    //console.log(XLSX.utils.sheet_to_json(worksheet, {
+    //    raw: true
+    //}));
+    Alldata = XLSX.utils.sheet_to_json(worksheet, {
+        raw: true
+    });
+    console.log(Alldata);
+    PrintAll();
+}
+oReq.send();
+
+
+function PrintAll() {
+    let mainContainer = document.getElementById("MyTBody");
+    let row = '';
+    for (let i = 0; i < Alldata.length; i++) {
+        row +=
+            `<tr><td>${Alldata[i].Asset}</td>
+                 <td>${Alldata[i].Model}</td>
+                 <td>${Alldata[i].Vendor}</td>
+                 <td>${Alldata[i].Description}</td>
+            </tr>`;
+    }
+    mainContainer.innerHTML = row;
+    document.getElementById("Mymain").innerHTML = Alldata.length;
+}
+
+let updateBTN = document.getElementById('updateBTN');
+updateBTN.onclick = function () {
+    console.log('Button clicked');
+    SaveData();
+}
+
+
+function SaveData() {
+    let url = `@Url.Action("SaveAllData","Home", new { Area="" }, null)`;
+    $.post(url, { mydata: Alldata }, function () {
+    }).done(function (result) {
+        alert('DB is Updated Well, Affected Rows' + `(` + result.Message + `)`);
+    }).fail(function () {
+        alert("error, Please Try again");
+   })
+}
+
+</script>
+

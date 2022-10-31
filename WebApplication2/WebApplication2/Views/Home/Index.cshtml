@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="container text-center">
+    <h2>Main Page</h2>
+    <br />
+    <div class="m-auto">
+        <a href="@Url.Action("WatchData","Home", new { Area="" }, null)">Go to Watch Data</a>
+    </div>
+    <br />
+    <div class="m-auto">
+        <a href="@Url.Action("JtableData","Home", new { Area="" }, null)">Go to Manipulate Data On DB</a>
+    </div>
+</div>

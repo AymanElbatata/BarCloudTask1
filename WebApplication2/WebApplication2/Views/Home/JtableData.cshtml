@@ -1,0 +1,105 @@
+﻿@{
+    string Vname = "JtableData";
+    ViewBag.Title = @Vname;
+    <script src="~/Content/Jtable/OtherFiles/jquery-2.2.4.min.js"></script>
+    <link href="~/Content/jtable/themes/metro/lightgray/jtable.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Jtable/OtherFiles/validationEngine.jquery.css" rel="stylesheet" type="text/css" />
+    <script src="~/Content/Jtable/OtherFiles/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Content/Jtable/jquery.jtable.min.js"></script>
+    <script type="text/javascript" src="~/Content/Jtable/OtherFiles/jquery.validationEngine.js"></script>
+    <script type="text/javascript" src="~/Content/Jtable/OtherFiles/jquery.validationEngine-en.js"></script>
+    <link href="~/Content/Jtable/themes/base/all.css" rel="stylesheet" />
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    //Layout = null;
+}
+
+<div class="text-center mb-3">
+    <h2>(@Vname)</h2>
+    <form class="form-horizontal" method="post">
+        <span>@Vname SpreadSheet Jtable </span>
+        <br />
+        <input type="text" autocomplete="off" id="txtENBTNSearch" name="txtENBTNSearch" class="col-md-3 text-center" required />
+        <br />
+        <input type="submit" class=" btn btn-outline-secondary" id="LoadRecordsButton" value="Search">
+    </form>
+
+</div>
+<div id="LKTBLNAME"></div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+            $('#LKTBLNAME').jtable({
+                title: '@Vname',
+                paging: true,
+                pageSize: 10,
+                sorting: true,
+                columnResizable: true,
+                columnSelectable: true,
+                saveUserPreferences: true,
+                actions: {
+                    listAction: 'READSpreadSheet',
+                    createAction: 'InsertSpreadSheet',
+                    updateAction: 'UpdateSpreadSheet',
+                    deleteAction: 'DeleteSpreadSheet',
+                },
+                fields: {
+                    id: {
+                        key: true,
+                        create: false,
+                        edit: false,
+                        list: false
+                    },
+                    Asset: {
+                        title: 'Asset',
+                        inputClass: 'validate[required]'
+                    },
+                    Model: {
+                        title: 'Model',
+                        inputClass: 'validate[required]',
+                    },
+                    Vendor: {
+                        title: 'Vendor',
+                        inputClass: 'validate[required]',
+                    },                   
+                    Description: {
+                        title: 'Description',
+                        type: 'textarea',
+                        inputClass: 'validate[required]',
+                        list: false
+                    }
+                },
+                formCreated: function (event, data) {
+                    if (data.formType == "create") {
+                        $(".ui-dialog-title").text("Add New");
+                    }
+                    else {
+                        $(".ui-dialog-title").text("Modify");
+                    }
+
+                    $("#Edit-Asset, #Edit-Model, #Edit-Vendor, #Edit-Description").attr('autocomplete', 'off');
+
+                },
+                formSubmitting: function (event, data) {
+                    return data.form.validationEngine('validate');
+                },
+                formClosed: function (event, data) {
+                    data.form.validationEngine('hide');
+                    data.form.validationEngine('detach');
+                    $(".ui-dialog-title").text("Remove");
+                },
+
+            });
+            $('#LKTBLNAME').jtable('load');
+
+            $('#LoadRecordsButton').click(function (e) {
+
+                e.preventDefault();
+                $('#LKTBLNAME').jtable('load', {
+
+                    txtENBTNSearch: $('#txtENBTNSearch').val()
+                });
+            });
+        });
+</script>
+
