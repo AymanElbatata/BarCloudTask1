@@ -1,3 +1,1 @@
-# BarCloudTask1
-BarCloudTask1
-Get Data from Excel Sheet (on cloud) then save in SQL db then manipulating it using .NET
+Get Data from Excel Sheet (on cloud) then saving in SQL db then manipulating data using .NET framework
